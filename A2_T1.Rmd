@@ -1,0 +1,18 @@
+---
+title: "Task_1"
+author: "Sandra Fogg"
+date: "2/17/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Open Science Perspectives
+
+The movement towards open science practices seeks to increase accountability, reproducibility, and transparency of research and review within all fields of science. The adoption of open practices is not only beneficial for the progression of science as a whole, but to the individual researchers choosing to adopt them.  Many scientists have begun to understand the importance of sharing data for the advancement of science, especially in fields like biomedical science where new data and approaches could be lifesaving. Those that are apprehensive to partake in open science must be advised of the personal benefits available. 
+	In terms of personal research, having a published repository of raw data and progress makes referring back to old data analyses much easier in the future.  This is key to responding to peer-review comments, expanding on past research, and reproducing similar analyses but with different data (such as a different geographic locations).  Reproducibility is not only important for personal benefit, but enables other researchers to run similar analyses, confidentiality cite work, and extend analyses further. Reproducibility, accountability, and traceability promote good research practices, and should be emulated by more researchers spanning various scientific fields. 
+	Additionally, scientists receive benefits in terms of publicity, citations, and funding. There has been a rise in funding institutions that prioritize or offer special funding opportunities for those practicing open science. Additionally certain universities have begun to consider openness and transparency in researchers seeking tenure and job promotions. Lastly, multiple studies have identified that open access publications actually receive more citations and coverage on media outlets that traditionally sourced journal articles. 
+	As great as these benefits are, however, there are still many boundaries to open science that make adoption challenging or impossible for researchers, and those seeking to access science. While open science is revered in some institutions, many stil abide by traditional customs, referring to open science as lower caliber work. This is frustrating for younger researchers that value the collaboration, publicity, and funding potential of open science, but are trying to establish their careers. Early researchers struggle with being at odds with supervisors, fear of retaliation in terms of open peer-review, and risk of having data scooped up and published before them, as is the case with early researchers (grad students, post-docs etc) that do not have adequate time to publish. Early career scientists also often face financial challenges, as some journals have begun charging extra fees to make publications open access. 
+	While conducting my own research, I try to be as transparent and well documented as possible. In previous positions, I have increased reproducibility with appropriate and consistent field and laboratory notebooks. In terms of data analysis, I try to annotate all of my code, publish repositories openly in Github, and create complete and accurate metadata.  One thing I could improve, specifically in terms of code is creating understandable, relevant, and meaningful “commit” messages in GitHub. Oftentimes I commit to save work, but fail to appropriately document changes that are understood by others. 
