@@ -1,0 +1,65 @@
+---
+title: "A2_T3"
+author: "Sandra Fogg"
+date: "2/17/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Mapping Big Island Land Use and Watersheds
+
+Load Required Packages
+```{r}
+library(tidyverse)
+library(sf)
+library(sp)
+library(rgdal)
+library(raster)
+library(dplyr)
+library(rgeos)
+library(scales)
+library(fasterize)
+library(dismo)
+library(maptools)
+library(sdmpredictors)
+library(leaflet)
+library(maps)
+library(ncdf4)
+library(marmap)
+library(rnaturalearth)
+library(dplyr)
+library(ggmap)
+library(rmapshaper)
+```
+
+Read in Shapefiles
+```{r}
+lulc <- read_sf("Land_Use_Land_Cover_LULC.shp")
+plot(lulc$geometry)
+st_crs(lulc)
+
+watersheds <- read_sf("Watersheds.shp")
+plot(watersheds$geometry)
+st_crs(watersheds)
+
+
+```
+Plot
+```{r}
+ggplot(watersheds) +
+  geom_sf() +
+  scale_color_gradientn(colors = c("white","yellow","magenta","purple")) +
+  theme_minimal()
+
+
+
+leaflet(lulc) %>%
+  addPolygons(fill = lulc$landcover, weight = 1, smoothFactor = 0.5,
+    opacity = 1.0, fillOpacity = 0.5) %>% 
+  addTiles()
+   
+```
+
