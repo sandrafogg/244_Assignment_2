@@ -1,0 +1,51 @@
+---
+title: "A2_T2"
+author: "Sandra Fogg"
+date: "2/19/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load Required Packages
+```{r}
+library(tsibble)
+library(fable)
+library(fabletools)
+library(tidyverse)
+library(feasts)
+library(forecast)
+library(janitor)
+library(lubridate)
+```
+
+Read in Data and Clean
+```{r}
+st_pass <- read_csv("steelhead_passage.csv") %>% 
+  clean_names()
+
+st_clean <- st_pass %>% 
+  unite(yymm, c(mm_dd, year), remove = FALSE) %>% 
+  mutate(dd)
+
+
+
+
+stpass_mod <- read_csv("steelhead_passage.csv") %>%
+  mutate(mthday = lubridate::parse_date_time(mmdd, "dm")) %>%
+  mutate(mth = month(mthday),
+         day = day(mthday)) %>%
+  select(-mmdd, -mthday) %>%
+  mutate(datatype = str_to_lower(datatype))
+
+View(stpass_mod)
+```
+
+```{r}
+steelead_clean <- stpass_mod %>%
+  group_by(mth, year)
+
+steelead_ym
+```
