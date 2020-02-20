@@ -1,4 +1,4 @@
-year,mm-dd,location,parameter,unit,datatype,value
+year,mm_dd,location,parameter,unit,datatype,value
 2019,1-Jan,BON,Stlhd,fish/day,Adult Passage,7
 2019,2-Jan,BON,Stlhd,fish/day,Adult Passage,19
 2019,3-Jan,BON,Stlhd,fish/day,Adult Passage,8

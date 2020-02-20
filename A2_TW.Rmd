@@ -5,12 +5,13 @@ date: "2/19/2020"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, warning = FALSE, message = FALSE, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, scipen = 9999)
+options(scipen=999)
 ```
 
 Load Required Packages
-```{r}
+```{r, warning = FALSE, message = FALSE}
 library(tsibble)
 library(fable)
 library(fabletools)
@@ -19,33 +20,76 @@ library(feasts)
 library(forecast)
 library(janitor)
 library(lubridate)
+library(paletteer)
 ```
 
-Read in Data and Clean
-```{r}
-st_pass <- read_csv("steelhead_passage.csv") %>% 
+Read in Data, Clean, and Add Formatted Date Columns
+```{r, warning = FALSE, message = FALSE}
+st_clean <- read_csv("cbr_fish_passage_bonneville_allyrs_steelhead.csv") %>% 
+  unite(dd_mon_yyyy, c(mm_dd, year), remove = FALSE) %>% 
+  mutate(yyyy_mm_dd = lubridate::dmy(dd_mon_yyyy),
+         month = lubridate::month(yyyy_mm_dd),
+         day = lubridate::day(yyyy_mm_dd)) %>% 
+  select(-dd_mon_yyyy,
+         -year) %>% 
+  mutate(year = lubridate::year(yyyy_mm_dd),
+         yyyy_mon = yearmonth(yyyy_mm_dd)) %>% 
+  drop_na() %>% 
   clean_names()
-
-st_clean <- st_pass %>% 
-  unite(yymm, c(mm_dd, year), remove = FALSE) %>% 
-  mutate(dd)
-
-
-
-
-stpass_mod <- read_csv("steelhead_passage.csv") %>%
-  mutate(mthday = lubridate::parse_date_time(mmdd, "dm")) %>%
-  mutate(mth = month(mthday),
-         day = day(mthday)) %>%
-  select(-mmdd, -mthday) %>%
-  mutate(datatype = str_to_lower(datatype))
-
-View(stpass_mod)
 ```
 
-```{r}
-steelead_clean <- stpass_mod %>%
-  group_by(mth, year)
 
-steelead_ym
+Create an Unfinalized Time Series Plot of Daily Observations
+```{r, warning = FALSE, message = FALSE}
+st_timeseries<- ggplot(st_clean, aes(x = yyyy_mm_dd, y = value))+
+  geom_line(color = "cyan4") + 
+  labs(x = "Date", y = "Number of Adult Steelhead Trout") +
+  theme_bw()
 ```
+
+
+Create a Finalized Average Monthly Passage Graph
+```{r, warning = FALSE, message = FALSE}
+# Find the Average Monthly Passage of Adult Steelhead
+st_ave_month <- st_clean %>%
+  group_by(year, month) %>% 
+  summarize(ave_month = round(mean(value), digits = 3)) 
+
+#View(st_ave_month)
+
+# Create a Plot of Average Monthly Passage
+st_ave_month_plt <- ggplot(data = st_ave_month , aes(x = year, y = ave_month, group_by(month))) +
+  geom_point(aes(color = month), shape = 5, legend = FALSE) +
+  scale_y_continuous(limits = c(0, 9000), expand = c(0,0), breaks = seq(0, 9000, by = 1500))+
+  scale_x_continuous(limits = c(1939, 2021), breaks = seq(1940, 2020, by = 10))+
+  #guides(color = guide_legend(title = "Month"))+
+  labs(x = "Year", y = "Number of Adult Steelhead Trout", title = "Average Montly Passage of Adult Steelhead Trout Individuals from 1939-2019", color = "Month")+
+  theme_classic() 
+
+# Change the Color Scheme
+st_ave_month_plt + scale_color_paletteer_c("grDevices::rainbow")
+
+```
+
+
+Create a Finalized Total Annual Passage Graph
+```{r, warning = FALSE, message = FALSE}
+# Find the Total Annual Passage of Adult Steelhead
+st_total_year <- st_clean %>%
+  group_by(year) %>% 
+  summarize(
+    total_year = sum(value)) 
+
+View(st_total_year)
+
+# Create a Plot of Total Annual Steelhead Passage
+st_total_year_plt <- ggplot(st_total_year, aes(x = year, y = total_year))+
+  geom_line(color = "darkgreen") +
+  scale_x_continuous(limits = c(1939, 2021), breaks = seq(1940, 2020, by = 10)) +
+  scale_y_continuous(expand = c(0,0), limits = c(60000, 700000), breaks = seq(0, 700000, by = 100000)) +
+  labs(x = "Year", y = "Number of Adult Steelhead Trout", title = "Total Annual Passage of Adult Steelhead Trout Individuals from 1939-2019")+
+  theme_classic()
+  
+st_total_year_plt
+```
+

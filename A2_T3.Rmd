@@ -5,11 +5,9 @@ date: "2/17/2020"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, warning = FALSE, message = FALSE, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
-## Mapping Big Island Land Use and Watersheds
 
 Load Required Packages
 ```{r}
@@ -33,33 +31,122 @@ library(rnaturalearth)
 library(dplyr)
 library(ggmap)
 library(rmapshaper)
+library(ggspatial)
 ```
 
-Read in Shapefiles
-```{r}
+Read in and Explore Shapefiles
+```{r, warning = FALSE, message = FALSE}
+# Read in Land Use and Land Cover
+# Plot, Check Coordinate Reference System, and Explore Types of Cover
 lulc <- read_sf("Land_Use_Land_Cover_LULC.shp")
-plot(lulc$geometry)
+plot(lulc)
 st_crs(lulc)
+unique(lulc$landcover)
 
+# Land Cover Types
+# [1] "Cropland and Pasture"                                                     
+# [2] "Commercial and Services"                                                  
+# [3] "Residential"                                                              
+# [4] "Evergreen Forest Land"                                                    
+# [5] "Other Urban or Built-up Land"                                             
+# [6] "Mixed Rangeland"                                                          
+# [7] "Industrial"                                                               
+# [8] "Streams and Canals"                                                       
+# [9] "Orchards, Groves, Vineyards, Nurseries and Ornamental Horticultural Areas"
+# [10] "Shrub and Brush Rangeland"                                                
+# [11] "Forested Wetland"                                                         
+# [12] "Reservoirs"                                                               
+# [13] "Nonforested Wetland"                                                      
+# [14] "Bare Exposed Rock"                                                        
+# [15] "Sandy Areas Other than Beaches"                                           
+# [16] "Transportation, Communications and Utilities"                             
+# [17] "Herbaceous Rangeland"                                                     
+# [18] "Beaches"                                                                  
+# [19] "Other Agricultural Land"                                                  
+# [20] "Lakes"                                                                    
+# [21] "Strip Mines, Quarries, and Gravel Pits"                                   
+# [22] "Mixed Barren Land"                                                        
+# [23] "Bays and Estuaries"                                                       
+# [24] "Mixed Urban or Built-up Land"                                             
+# [25] "Transitional Areas"                                                       
+# [26] "0"                                                                        
+# [27] "Industrial and Commercial Complexes"                                      
+# [28] "Confined Feeding Operations"                                              
+
+#Read in Watersheds
+# Plot, Check Coordinate Reference System, and Explore Types of Cover
 watersheds <- read_sf("Watersheds.shp")
-plot(watersheds$geometry)
+plot(watersheds)
 st_crs(watersheds)
+unique(watersheds)
 
+#  Watershed Measurements
+# [1] objectid                                                    
+# [2] wuname                                                
+# [3] wuc                                                             
+# [4] hucarea                                                   
+# [5] huc                                            
+# [6] swma                                                          
+# [7] area_sqmi                                                              
+# [8] st_areasha                                                     
+# [9] st_perimet
 
 ```
-Plot
-```{r}
-ggplot(watersheds) +
-  geom_sf() +
-  scale_color_gradientn(colors = c("white","yellow","magenta","purple")) +
-  theme_minimal()
 
+LANDCOVER
 
+Combine Landcover Types
+```{r, warning = FALSE, message = FALSE}
+# Categorize into Agriculture, Urban/Residential/Commercial, Natural
+lulc_3cats <- lulc %>% 
+  mutate(
+    landcover = case_when(
+       landcover %in% c("Cropland and Pasture","Mixed Rangeland", "Orchards, Groves, Vineyards, Nurseries and Ornamental Horticultural Areas",
+                       "Shrub and Brush Rangeland", "Herbaceous Rangeland", 
+                       "Other Agricultural Land","Confined Feeding Operations") ~ "Agriculture",
+      landcover %in% c("Commercial and Services", "Residential", "Other Urban or Built-up Land", "Industrial", "Reservoirs",
+                       "Transportation, Communications and Utilities", "Strip Mines, Quarries, and Gravel Pits", "Mixed Urban or Built-up Land", 
+                       "Transitional Areas", "Industrial and Commercial Complexes") ~ "Urban/Residential/Commercial",
+      landcover %in% c("Evergreen Forest Land", "Streams and Canals", "Forested Wetland", "Nonforested Wetland", "Bare Exposed Rock",
+                       "Sandy Areas Other than Beaches", "Beaches", "Lakes", "Mixed Barren Land", "Bays and Estuaries") ~ "Natural",
+    TRUE ~ landcover)) %>% 
+      filter(landcover != "0")
 
-leaflet(lulc) %>%
-  addPolygons(fill = lulc$landcover, weight = 1, smoothFactor = 0.5,
-    opacity = 1.0, fillOpacity = 0.5) %>% 
-  addTiles()
-   
+unique(lulc_3cats$landcover)
+lulc_3cats
 ```
+
+Create a Map of Landcover and Uses in Hawaii
+```{r, warning = FALSE, message = FALSE}
+#Create a Static Map of Generalized Landcover Types
+lulc_plt <- ggplot(lulc_3cats) +
+  geom_sf(data = lulc_3cats,  aes(fill = landcover), color = NA) +
+  coord_sf(xlim = c(-156.5, -154.5), ylim = c(18.5, 20.5), expand = FALSE) +
+  labs(fill = "Landcover Type", x = "Longtitude", y = "Latitude", title = "Mixed Land Uses and Covers on the Big Island, Hawai'i") +
+  scale_fill_paletteer_d("awtools::spalette") +
+  theme_classic() +
+  theme(panel.background = element_rect(fill = "lightskyblue2")) 
+ 
+lulc_plt
+
+```
+
+WATERSHEDS
+
+Create a Map of Watershed Areas
+```{r, warning = FALSE, message = FALSE}
+#Create a Static Map of Generalized Landcover Types
+watersheds_plt <- ggplot(watersheds) +
+  geom_sf(data = watersheds, aes(fill = watersheds$area_sqmi), color = "black") +
+  coord_sf(xlim = c(-156.5, -154.5), ylim = c(18.5, 20.5), expand = FALSE) +
+  labs(fill = "Watershed Size (Sq. Miles)", x = "Longtitude", y = "Latitude", title = "Watersheds on the Big Island Hawai'i") +
+  scale_fill_paletteer_c("pals::ocean.matter") +
+  theme_classic() +
+  theme(panel.background = element_rect(fill = "lightskyblue")) 
+
+
+watersheds_plt
+```
+
+
 
