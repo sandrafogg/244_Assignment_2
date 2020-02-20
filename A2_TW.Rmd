@@ -1,5 +1,5 @@
 ---
-title: "A2_T2"
+title: "Steelhead Trout"
 author: "Sandra Fogg"
 date: "2/19/2020"
 output: html_document
@@ -10,8 +10,8 @@ knitr::opts_chunk$set(echo = TRUE, scipen = 9999)
 options(scipen=999)
 ```
 
-Load Required Packages
-```{r, warning = FALSE, message = FALSE}
+
+```{r, warning = FALSE, message = FALSE, include = FALSE}
 library(tsibble)
 library(fable)
 library(fabletools)
@@ -22,9 +22,17 @@ library(janitor)
 library(lubridate)
 library(paletteer)
 ```
+## ADULT PASSAGE
+|![](/Users/sandra/Documents/MESM Year 1/GitHub/244_Assignment_2/steely.jpg) |
+|:--:| 
+|  *Oncorhynchus mykiss* reproduce in the cold, flowing, well-oxygenated rivers of the Pacific Northwest (photo: Pixabay). |
+<br>
+While some steelhead trout spend their whole lives in freshwater systems, some anadromous individuals outmigrate to brackish or ocean waters before returning to rivers and streams to reproduce. Each year millions of mature individuals return back to their natal spawning grounds to breed, but are hindered by obstacles or the lack of water connectivity.  Fish passage is a measure of the number of adult individual steelhead that have successfully returned to freshwater habitats to spawn. This analysis invistigates daily, monthly, and annual successful fish passage at the Bonneville Dam in the Columbia River Basin from the years 1939-2019. 
+(US Fish & Wildlife Service)
 
-Read in Data, Clean, and Add Formatted Date Columns
+### Data Processing
 ```{r, warning = FALSE, message = FALSE}
+#Read in Data, Clean, and Add Formatted Date Columns
 st_clean <- read_csv("cbr_fish_passage_bonneville_allyrs_steelhead.csv") %>% 
   unite(dd_mon_yyyy, c(mm_dd, year), remove = FALSE) %>% 
   mutate(yyyy_mm_dd = lubridate::dmy(dd_mon_yyyy),
@@ -39,17 +47,18 @@ st_clean <- read_csv("cbr_fish_passage_bonneville_allyrs_steelhead.csv") %>%
 ```
 
 
-Create an Unfinalized Time Series Plot of Daily Observations
+### Results: Time Series of Daily Passage
 ```{r, warning = FALSE, message = FALSE}
+#Create an Unfinalized Time Series Plot of Daily Observations
 st_timeseries<- ggplot(st_clean, aes(x = yyyy_mm_dd, y = value))+
   geom_line(color = "cyan4") + 
   labs(x = "Date", y = "Number of Adult Steelhead Trout") +
   theme_bw()
 ```
 
-
-Create a Finalized Average Monthly Passage Graph
+### Results: Average Monthly Passage 
 ```{r, warning = FALSE, message = FALSE}
+# Create a Finalized Average Monthly Passage Graph
 # Find the Average Monthly Passage of Adult Steelhead
 st_ave_month <- st_clean %>%
   group_by(year, month) %>% 
@@ -71,9 +80,9 @@ st_ave_month_plt + scale_color_paletteer_c("grDevices::rainbow")
 
 ```
 
-
-Create a Finalized Total Annual Passage Graph
+### Results: Total Annual Passage 
 ```{r, warning = FALSE, message = FALSE}
+# Create a Finalized Total Annual Passage Graph
 # Find the Total Annual Passage of Adult Steelhead
 st_total_year <- st_clean %>%
   group_by(year) %>% 

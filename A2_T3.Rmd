@@ -33,13 +33,15 @@ library(rmapshaper)
 library(ggspatial)
 library(paletteer)
 ```
-##LANDCOVER
+## LANDCOVER
+<br>
+The Big Island of Hawai'i is one of the most biodiverse places on Earth. There are many different types of biomes and microclimates on the island that support an abundance of wild flora and fauna, as well as human uses. In this analysis, land use and cover is generalized and visualized into three separate categories: Agriculture, Urban/Residential/Commercial, and Natural. These categories were developed by combining 27 specified land uses and coverage types.
+<br>
+<br>
 
-The Big Island of Hawai'i is one of the most biodiverse places on Earth. There are many different types of biomes and microclimates on the island that support and abundance of wild flora and fauna, as well as human uses. In this analysis, land use and cover is generalized and visualized into three separate categories: Agriculture, Urban/Residential/Commercial, and Natural. These categories were developed by combining 27 specified land uses and coverage types.
-
-
-Read in and Explore Shapefiles
+### Data Processing
 ```{r, warning = FALSE, message = FALSE}
+#Read in and Explore Shapefiles
 # Read in Land Use and Land Cover
 # Plot, Check Coordinate Reference System, and Explore Types of Cover
 lulc <- read_sf("Land_Use_Land_Cover_LULC.shp")
@@ -98,7 +100,7 @@ watersheds <- read_sf("Watersheds.shp")
 ```
 
 
-
+<br>
 Combine Landcover Types
 ```{r, warning = FALSE, message = FALSE}
 # Categorize into Agriculture, Urban/Residential/Commercial, Natural
@@ -119,14 +121,17 @@ lulc_3cats <- lulc %>%
 #unique(lulc_3cats$landcover)
 #lulc_3cats
 ```
+<br>
 
-Create a Map of Landcover and Uses in Hawaii
+### Results: Landcover Map
+
 ```{r, warning = FALSE, message = FALSE}
+#Create a Map of Landcover and Uses in Hawaii
 #Create a Static Map of Generalized Landcover Types
 lulc_plt <- ggplot(lulc_3cats) +
   geom_sf(data = lulc_3cats,  aes(fill = landcover), color = NA) +
   coord_sf(xlim = c(-156.5, -154.5), ylim = c(18.5, 20.5), expand = FALSE) +
-  labs(fill = "Landcover Type", x = "Longtitude", y = "Latitude", title = "Mixed Land Uses and Covers on the Big Island, Hawai'i") +
+  labs(fill = "Landcover Type", x = "Longtitude", y = "Latitude", title = "Land Use on the Big Island, Hawai'i") +
   scale_fill_paletteer_d("awtools::spalette") +
   theme_classic() +
   theme(panel.background = element_rect(fill = "lightskyblue2")) 
@@ -134,13 +139,19 @@ lulc_plt <- ggplot(lulc_3cats) +
 lulc_plt
 
 ```
+<br>
 
-##WATERSHEDS
+## WATERSHEDS
 
+<br>
 Hawaii's unique Pacific Island climate brings lots of annual precipitation to the region. The unique volcanic mountanious terrain separates the flows of these waters to many different parts of the island in specified watersheds. The map below depicts watersheds and their respective areas in square mileage.
+<br>
+<br>
 
-Create a Map of Watershed Areas
+### Results: Watersheds Map
+
 ```{r, warning = FALSE, message = FALSE}
+#Create a Map of Watershed Areas
 #Create a Static Map of Generalized Landcover Types
 watersheds_plt <- ggplot(watersheds) +
   geom_sf(data = watersheds, aes(fill = watersheds$area_sqmi), color = "black") +
