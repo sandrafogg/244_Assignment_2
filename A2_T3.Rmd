@@ -1,5 +1,5 @@
 ---
-title: "A2_T3"
+title: "Land Use and Watersheds of the Big Island Hawai'i"
 author: "Sandra Fogg"
 date: "2/17/2020"
 output: html_document
@@ -9,8 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Load Required Packages
-```{r}
+```{r, warning = FALSE, message = FALSE, include=FALSE}
 library(tidyverse)
 library(sf)
 library(sp)
@@ -32,16 +31,21 @@ library(dplyr)
 library(ggmap)
 library(rmapshaper)
 library(ggspatial)
+library(paletteer)
 ```
+##LANDCOVER
+
+The Big Island of Hawai'i is one of the most biodiverse places on Earth. There are many different types of biomes and microclimates on the island that support and abundance of wild flora and fauna, as well as human uses. In this analysis, land use and cover is generalized and visualized into three separate categories: Agriculture, Urban/Residential/Commercial, and Natural. These categories were developed by combining 27 specified land uses and coverage types.
+
 
 Read in and Explore Shapefiles
 ```{r, warning = FALSE, message = FALSE}
 # Read in Land Use and Land Cover
 # Plot, Check Coordinate Reference System, and Explore Types of Cover
 lulc <- read_sf("Land_Use_Land_Cover_LULC.shp")
-plot(lulc)
-st_crs(lulc)
-unique(lulc$landcover)
+#plot(lulc)
+#st_crs(lulc)
+#unique(lulc$landcover)
 
 # Land Cover Types
 # [1] "Cropland and Pasture"                                                     
@@ -76,9 +80,9 @@ unique(lulc$landcover)
 #Read in Watersheds
 # Plot, Check Coordinate Reference System, and Explore Types of Cover
 watersheds <- read_sf("Watersheds.shp")
-plot(watersheds)
-st_crs(watersheds)
-unique(watersheds)
+#plot(watersheds)
+#st_crs(watersheds)
+#unique(watersheds)
 
 #  Watershed Measurements
 # [1] objectid                                                    
@@ -93,7 +97,7 @@ unique(watersheds)
 
 ```
 
-LANDCOVER
+
 
 Combine Landcover Types
 ```{r, warning = FALSE, message = FALSE}
@@ -112,8 +116,8 @@ lulc_3cats <- lulc %>%
     TRUE ~ landcover)) %>% 
       filter(landcover != "0")
 
-unique(lulc_3cats$landcover)
-lulc_3cats
+#unique(lulc_3cats$landcover)
+#lulc_3cats
 ```
 
 Create a Map of Landcover and Uses in Hawaii
@@ -131,7 +135,9 @@ lulc_plt
 
 ```
 
-WATERSHEDS
+##WATERSHEDS
+
+Hawaii's unique Pacific Island climate brings lots of annual precipitation to the region. The unique volcanic mountanious terrain separates the flows of these waters to many different parts of the island in specified watersheds. The map below depicts watersheds and their respective areas in square mileage.
 
 Create a Map of Watershed Areas
 ```{r, warning = FALSE, message = FALSE}
@@ -147,6 +153,4 @@ watersheds_plt <- ggplot(watersheds) +
 
 watersheds_plt
 ```
-
-
 
